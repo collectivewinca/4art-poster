@@ -1,5 +1,4 @@
 import L from 'leaflet';
-import maplibregl from 'maplibre-gl';
 import { state, updateState, getSelectedTheme, getSelectedArtisticTheme } from '../core/state.js';
 import { markerIcons } from '../core/marker-icons.js';
 import { getMap, getArtisticMap } from './map-init.js';
@@ -77,34 +76,39 @@ export function updateMarkerStyles(currentState) {
 		markers.push(lMarker);
 
 		if (artisticMap) {
-			const el = document.createElement('div');
-			el.className = 'custom-marker';
-			el.innerHTML = html;
-			el.style.width = `${size}px`;
-			el.style.height = `${size}px`;
+			import('maplibre-gl').then(mod => {
+				const mgl = mod.default || mod;
+				const el = document.createElement('div');
+				el.className = 'custom-marker';
+				el.style.width = size + 'px';
+				el.style.height = size + 'px';
+				const parser = new DOMParser();
+				const svgDoc = parser.parseFromString(html, 'text/html');
+				while (svgDoc.body.firstChild) el.appendChild(svgDoc.body.firstChild);
 
-			el.addEventListener('dblclick', (e) => {
-				e.stopPropagation();
-				const newMarkers = currentState.markers.filter((_, i) => i !== index);
-				updateState({ markers: newMarkers });
+				el.addEventListener('dblclick', (e) => {
+					e.stopPropagation();
+					const newMarkers = currentState.markers.filter((_, i) => i !== index);
+					updateState({ markers: newMarkers });
+				});
+
+				const aMarker = new mgl.Marker({
+					element: el,
+					draggable: true,
+					anchor: iconType === 'pin' ? 'bottom' : 'center'
+				})
+					.setLngLat([markerData.lon, markerData.lat])
+					.addTo(artisticMap);
+
+				aMarker.on('dragend', () => {
+					const pos = aMarker.getLngLat();
+					const newMarkers = [...currentState.markers];
+					newMarkers[index] = { lat: pos.lat, lon: pos.lng };
+					updateState({ markers: newMarkers });
+				});
+
+				artisticMarkers.push(aMarker);
 			});
-
-			const aMarker = new maplibregl.Marker({
-				element: el,
-				draggable: true,
-				anchor: iconType === 'pin' ? 'bottom' : 'center'
-			})
-				.setLngLat([markerData.lon, markerData.lat])
-				.addTo(artisticMap);
-
-			aMarker.on('dragend', () => {
-				const pos = aMarker.getLngLat();
-				const newMarkers = [...currentState.markers];
-				newMarkers[index] = { lat: pos.lat, lon: pos.lng };
-				updateState({ markers: newMarkers });
-			});
-
-			artisticMarkers.push(aMarker);
 		}
 	});
 }

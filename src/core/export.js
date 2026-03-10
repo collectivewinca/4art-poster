@@ -81,15 +81,16 @@ async function captureMapSnapshot() {
 
 				let mapDataURL = null;
 				await new Promise(resolve => {
-					const timer = setTimeout(() => {
-						try { mapDataURL = artisticMap.getCanvas().toDataURL(); } catch (e) { }
-						resolve();
-					}, 1500);
-					artisticMap.once('idle', () => {
+					let resolved = false;
+					const done = () => {
+						if (resolved) return;
+						resolved = true;
 						clearTimeout(timer);
 						try { mapDataURL = artisticMap.getCanvas().toDataURL(); } catch (e) { }
 						resolve();
-					});
+					};
+					artisticMap.once('idle', done);
+					const timer = setTimeout(done, 5000);
 				});
 
 				if (mapDataURL) {
@@ -156,7 +157,7 @@ async function captureMapSnapshot() {
 
 				return data;
 			} catch (e) {
-				console.error('Gagal capture Artistic Map:', e);
+				console.error('Failed to capture Artistic Map:', e);
 			}
 		}
 	} else if (mapPreviewContainer) {
@@ -237,7 +238,7 @@ async function captureMapSnapshot() {
 
 			return canvas.toDataURL('image/png');
 		} catch (e) {
-			console.error('Gagal capture Leaflet Map:', e);
+			console.error('Failed to capture Leaflet Map:', e);
 		}
 	}
 	return null;
@@ -289,13 +290,9 @@ function drawComplexRouteToCtx(ctx, points, color, themeBg = '#ffffff', scaleFac
 	};
 	drawPoint(points[0].x, points[0].y, 'A');
 	drawPoint(points[points.length - 1].x, points[points.length - 1].y, 'B');
-
-	drawPoint(points[0].x, points[0].y, 'A');
-	drawPoint(points[points.length - 1].x, points[points.length - 1].y, 'B');
 }
 
 async function drawMarkerToCtx(ctx, x, y, color) {
-	const { state } = await import('./state.js');
 	const iconType = state.markerIcon || 'pin';
 	const baseSize = 40;
 	const size = Math.round(baseSize * (state.markerSize || 1));

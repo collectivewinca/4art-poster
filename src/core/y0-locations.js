@@ -1,0 +1,15 @@
+export const y0Locations = [
+	{ name: 'Stockholm', country: 'Sweden', lat: 59.3293, lon: 18.0686, zoom: 13 },
+	{ name: 'Copenhagen', country: 'Denmark', lat: 55.6761, lon: 12.5683, zoom: 13 },
+	{ name: 'Amsterdam', country: 'Netherlands', lat: 52.3676, lon: 4.9041, zoom: 13 },
+	{ name: 'Marrakech', country: 'Morocco', lat: 31.6295, lon: -7.9811, zoom: 13 },
+	{ name: 'New York', country: 'United States', lat: 40.7128, lon: -74.0060, zoom: 12 },
+	{ name: 'Mexico City', country: 'Mexico', lat: 19.4326, lon: -99.1332, zoom: 12 },
+	{ name: 'Medell\u00EDn', country: 'Colombia', lat: 6.2442, lon: -75.5812, zoom: 13 },
+	{ name: 'S\u00E3o Paulo', country: 'Brazil', lat: -23.5505, lon: -46.6333, zoom: 12 },
+	{ name: 'Miami', country: 'United States', lat: 25.7617, lon: -80.1918, zoom: 13 },
+	{ name: 'Santo Domingo', country: 'Dominican Republic', lat: 18.4861, lon: -69.9312, zoom: 13 },
+	{ name: 'Bali', country: 'Indonesia', lat: -8.3405, lon: 115.0920, zoom: 11 },
+	{ name: 'Tokyo', country: 'Japan', lat: 35.6762, lon: 139.6503, zoom: 12 },
+	{ name: 'Ithaca', country: 'United States', lat: 42.4440, lon: -76.5019, zoom: 14 },
+];

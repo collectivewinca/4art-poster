@@ -1,11 +1,33 @@
+const APP_USER_AGENT = 'MapToPosterJS/1.0 (https://github.com/collectivewinca/map-to-poster)';
+
+let lastRequestTime = 0;
+const MIN_INTERVAL_MS = 1100;
+
+async function rateLimit() {
+	const now = Date.now();
+	const elapsed = now - lastRequestTime;
+	if (elapsed < MIN_INTERVAL_MS) {
+		await new Promise(r => setTimeout(r, MIN_INTERVAL_MS - elapsed));
+	}
+	lastRequestTime = Date.now();
+}
+
 export async function searchLocation(query, opts = {}) {
 	if (!query || query.length < 2) return [];
 
 	const { limit = 15, signal } = opts;
 
 	try {
+		await rateLimit();
+
 		const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=${limit}&addressdetails=1`;
-		const response = await fetch(url, { signal, headers: { 'Accept': 'application/json' } });
+		const response = await fetch(url, {
+			signal,
+			headers: {
+				'Accept': 'application/json',
+				'User-Agent': APP_USER_AGENT
+			}
+		});
 		const data = await response.json();
 
 		return data.map(item => ({

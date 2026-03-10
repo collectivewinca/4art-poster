@@ -1,5 +1,7 @@
 import L from 'leaflet';
-import maplibregl from 'maplibre-gl';
+
+let _maplibregl = null;
+export function setMapLibreGL(mgl) { _maplibregl = mgl; }
 import { state, updateState, getSelectedTheme, getSelectedArtisticTheme } from '../core/state.js';
 import { findBestInsertIndex } from '../core/utils.js';
 import { fetchOSRMRoute } from '../core/routing.js';
@@ -290,7 +292,7 @@ export function updateRouteStyles(state) {
 					el.style.zIndex = '990';
 					el.innerHTML = `<div style="width: 12px; height: 12px; background: white; border: 2px solid #333; border-radius: 50%; box-shadow: 0 0 4px rgba(0,0,0,0.4); cursor: grab;"></div>`;
 
-					const am = new maplibregl.Marker({ element: el, draggable: true })
+					const am = new _maplibregl.Marker({ element: el, draggable: true })
 						.setLngLat([p.lon, p.lat])
 						.addTo(artisticMap);
 
@@ -339,7 +341,7 @@ export function updateRouteStyles(state) {
 				el.style.justifyContent = 'center';
 				el.style.zIndex = '1000';
 				el.innerHTML = routeMarkerHtml('A');
-				artisticRouteStartMarker = new maplibregl.Marker({ element: el, draggable: true }).setLngLat([start[1], start[0]]).addTo(artisticMap);
+				artisticRouteStartMarker = new _maplibregl.Marker({ element: el, draggable: true }).setLngLat([start[1], start[0]]).addTo(artisticMap);
 				artisticRouteStartMarker.on('drag', () => {
 					if (isSyncing) return;
 					isSyncing = true;
@@ -363,7 +365,7 @@ export function updateRouteStyles(state) {
 				el.style.justifyContent = 'center';
 				el.style.zIndex = '1000';
 				el.innerHTML = routeMarkerHtml('B');
-				artisticRouteEndMarker = new maplibregl.Marker({ element: el, draggable: true }).setLngLat([end[1], end[0]]).addTo(artisticMap);
+				artisticRouteEndMarker = new _maplibregl.Marker({ element: el, draggable: true }).setLngLat([end[1], end[0]]).addTo(artisticMap);
 				artisticRouteEndMarker.on('drag', () => {
 					if (isSyncing) return;
 					isSyncing = true;

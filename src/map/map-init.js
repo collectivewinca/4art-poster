@@ -1,28 +1,40 @@
 import L from 'leaflet';
-import maplibregl from 'maplibre-gl';
 import { state, updateState } from '../core/state.js';
 import { markerIcons } from '../core/marker-icons.js';
 import { findBestInsertIndex } from '../core/utils.js';
-import { updateRouteGeometry, syncRouteMarkers } from './route-manager.js';
+import { updateRouteGeometry, syncRouteMarkers, setMapLibreGL } from './route-manager.js';
 import { generateMapLibreStyle } from './artistic-style.js';
 import { clearMarkers } from './marker-manager.js';
 
 let map = null;
 let tileLayer = null;
 let artisticMap = null;
+let maplibregl = null;
 let currentArtisticThemeName = null;
 let isSyncing = false;
 let styleChangeInProgress = false;
 let pendingArtisticStyle = null;
 let pendingArtisticThemeName = null;
+let maplibreLoadPromise = null;
 
 export const getMap = () => map;
 export const getArtisticMap = () => artisticMap;
 
+async function loadMapLibre() {
+	if (maplibregl) return maplibregl;
+	if (maplibreLoadPromise) return maplibreLoadPromise;
+	maplibreLoadPromise = import('maplibre-gl').then(mod => {
+		maplibregl = mod.default || mod;
+		setMapLibreGL(maplibregl);
+		return maplibregl;
+	});
+	return maplibreLoadPromise;
+}
+
 export function initMap(containerId, initialCenter, initialZoom, initialTileUrl) {
 	map = L.map(containerId, {
 		zoomControl: false,
-		attributionControl: false,
+		attributionControl: true,
 		scrollWheelZoom: 'center',
 		touchZoom: 'center'
 	}).setView(initialCenter, initialZoom);
@@ -30,6 +42,7 @@ export function initMap(containerId, initialCenter, initialZoom, initialTileUrl)
 	tileLayer = L.tileLayer(initialTileUrl, {
 		maxZoom: 19,
 		crossOrigin: true,
+		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
 	}).addTo(map);
 
 	map.on('moveend', () => {
@@ -54,10 +67,8 @@ export function initMap(containerId, initialCenter, initialZoom, initialTileUrl)
 		isSyncing = false;
 	});
 
-	try {
-		initArtisticMap('artistic-map', [initialCenter[1], initialCenter[0]], initialZoom - 1);
-	} catch (err) {
-		console.error('Failed to initialize artistic map (MapLibre GL):', err);
+	if (state.renderMode === 'artistic') {
+		ensureArtisticMap([initialCenter[1], initialCenter[0]], initialZoom - 1);
 	}
 
 	if (state.showRoute) {
@@ -65,6 +76,19 @@ export function initMap(containerId, initialCenter, initialZoom, initialTileUrl)
 	}
 
 	return map;
+}
+
+async function ensureArtisticMap(center, zoom) {
+	if (artisticMap) return artisticMap;
+
+	try {
+		await loadMapLibre();
+		initArtisticMap('artistic-map', center || [state.lon, state.lat], zoom !== undefined ? zoom : state.zoom - 1);
+		return artisticMap;
+	} catch (err) {
+		console.error('Failed to initialize artistic map (MapLibre GL):', err);
+		return null;
+	}
 }
 
 function initArtisticMap(containerId, center, zoom) {
@@ -171,7 +195,8 @@ function initArtisticMap(containerId, center, zoom) {
 	});
 }
 
-export function updateArtisticStyle(theme) {
+export async function updateArtisticStyle(theme) {
+	await ensureArtisticMap();
 	if (!artisticMap) return;
 	if (currentArtisticThemeName === theme.name) return;
 
@@ -251,4 +276,3 @@ export function invalidateMapSize() {
 
 export { updateRouteStyles, syncRouteMarkers, updateRouteGeometry } from './route-manager.js';
 export { updateMarkerStyles, updateMarkerIcon, updateMarkerSize, updateMarkerVisibility, updateMarkerPosition } from './marker-manager.js';
-
