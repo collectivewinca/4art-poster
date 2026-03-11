@@ -276,3 +276,4 @@ export function invalidateMapSize() {
 
 export { updateRouteStyles, syncRouteMarkers, updateRouteGeometry } from './route-manager.js';
 export { updateMarkerStyles, updateMarkerIcon, updateMarkerSize, updateMarkerVisibility, updateMarkerPosition } from './marker-manager.js';
+export { updateEntityMarkers, addEntityMarker, isEntityPinned } from './entity-marker-manager.js';

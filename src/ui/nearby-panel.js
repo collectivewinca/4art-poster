@@ -1,4 +1,5 @@
 import { findNearby, getEntityDetail, categoryLabel, entityLink } from '../core/directory-api.js';
+import { addEntityMarker, isEntityPinned } from '../map/entity-marker-manager.js';
 
 const CATEGORY_COLORS = {
 	artists: ['bg-purple-100', 'text-purple-700'],
@@ -59,7 +60,7 @@ export function setupNearbyPanel() {
 			activeFilter = 'all';
 			expandedEntity = null;
 			render(container);
-		}
+		},
 	};
 }
 
@@ -146,6 +147,24 @@ function buildCard(entity, rootContainer) {
 	}
 
 	row.appendChild(info);
+
+	// Pin to map button
+	const pinned = isEntityPinned(entity.id);
+	const pinBtn = el('button', `flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-md transition-all ${pinned ? 'bg-accent/10 text-accent' : 'text-slate-300 hover:text-accent hover:bg-slate-50'}`);
+	pinBtn.title = pinned ? 'Remove from map' : 'Pin to map';
+	pinBtn.appendChild(svgIcon(
+		pinned
+			? 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z'
+			: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z',
+		`w-3.5 h-3.5 ${pinned ? 'fill-current stroke-current' : ''}`
+	));
+	pinBtn.addEventListener('click', (e) => {
+		e.stopPropagation();
+		addEntityMarker(entity);
+		render(rootContainer);
+	});
+	row.appendChild(pinBtn);
+
 	row.appendChild(svgIcon('M9 5l7 7-7 7', `w-3.5 h-3.5 text-slate-300 group-hover:text-accent transition-colors flex-shrink-0 ${expandedEntity === entity.id ? 'rotate-90' : ''}`));
 	card.appendChild(row);
 

@@ -1,7 +1,7 @@
 import './style.css';
 
 import { subscribe, state, getSelectedTheme } from './src/core/state.js';
-import { initMap, updateMapTheme, invalidateMapSize, waitForTilesLoad, waitForArtisticIdle, updateMarkerStyles, updateRouteStyles } from './src/map/map-init.js';
+import { initMap, updateMapTheme, invalidateMapSize, waitForTilesLoad, waitForArtisticIdle, updateMarkerStyles, updateRouteStyles, updateEntityMarkers } from './src/map/map-init.js';
 import { setupControls, updatePreviewStyles } from './src/ui/form.js';
 import { exportToPNG } from './src/core/export.js';
 import { setupNearbyPanel } from './src/ui/nearby-panel.js';
@@ -50,6 +50,7 @@ subscribe((currentState) => {
 	updatePreviewStyles(currentState);
 
 	updateMarkerStyles(currentState);
+	updateEntityMarkers(currentState);
 	updateRouteStyles(currentState);
 
 	syncUI(currentState);

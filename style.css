@@ -127,6 +127,11 @@ body.loaded {
 		@apply flex items-center justify-center;
 	}
 
+	.entity-marker {
+		background: none !important;
+		border: none !important;
+	}
+
 	.marker-pin {
 		@apply w-10 h-10 text-accent filter drop-shadow-lg;
 	}
