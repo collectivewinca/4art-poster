@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { y0Locations } from '../src/core/y0-locations.js';
 
 describe('y0Locations', () => {
-	it('contains all 13 residency locations', () => {
-		expect(y0Locations).toHaveLength(13);
+	it('contains all 14 residency locations', () => {
+		expect(y0Locations).toHaveLength(14);
 	});
 
 	it('each location has required fields', () => {
@@ -26,7 +26,9 @@ describe('y0Locations', () => {
 		expect(names).toContain('Tokyo');
 		expect(names).toContain('New York');
 		expect(names).toContain('Bali');
-		expect(names).toContain('Ithaca');
+		expect(names).toContain('Nashville');
+		expect(names).toContain('Guadalajara');
+		expect(names).toContain('Surf City');
 	});
 
 	it('coordinates are within valid ranges', () => {
