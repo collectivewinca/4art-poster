@@ -4,6 +4,7 @@ import { subscribe, state, getSelectedTheme } from './src/core/state.js';
 import { initMap, updateMapTheme, invalidateMapSize, waitForTilesLoad, waitForArtisticIdle, updateMarkerStyles, updateRouteStyles } from './src/map/map-init.js';
 import { setupControls, updatePreviewStyles } from './src/ui/form.js';
 import { exportToPNG } from './src/core/export.js';
+import { setupNearbyPanel } from './src/ui/nearby-panel.js';
 
 const initialTheme = getSelectedTheme();
 try {
@@ -13,6 +14,23 @@ try {
 }
 
 const syncUI = setupControls();
+const { updateNearby } = setupNearbyPanel();
+
+// Debounced nearby update — triggers on location change
+let nearbyTimer = null;
+let lastNearbyKey = '';
+function scheduleNearbyUpdate(s) {
+	const key = `${s.lat.toFixed(2)},${s.lon.toFixed(2)}`;
+	if (key === lastNearbyKey) return;
+	clearTimeout(nearbyTimer);
+	nearbyTimer = setTimeout(() => {
+		lastNearbyKey = key;
+		updateNearby(s.lat, s.lon, s.city, s.country);
+	}, 800);
+}
+
+// Initial load
+scheduleNearbyUpdate(state);
 
 const exportBtn = document.getElementById('export-btn');
 const mobileExportBtn = document.getElementById('mobile-export-btn');
@@ -35,6 +53,7 @@ subscribe((currentState) => {
 	updateRouteStyles(currentState);
 
 	syncUI(currentState);
+	scheduleNearbyUpdate(currentState);
 	ensurePreviewReady();
 });
 
@@ -95,7 +114,7 @@ async function ensurePreviewReady() {
 }
 
 exportBtn.addEventListener('click', async () => {
-	const filename = `MapToPoster-${state.city.replace(/\s+/g, '-')}-${Date.now()}.png`;
+	const filename = `MINYATION-${state.city.replace(/\s+/g, '-')}-${Date.now()}.png`;
 	setExportButtonLoading(true, 'processing');
 	try {
 		await exportToPNG(posterContainer, filename, null);
@@ -105,7 +124,7 @@ exportBtn.addEventListener('click', async () => {
 });
 
 mobileExportBtn?.addEventListener('click', async () => {
-	const filename = `MapToPoster-${state.city.replace(/\s+/g, '-')}-${Date.now()}.png`;
+	const filename = `MINYATION-${state.city.replace(/\s+/g, '-')}-${Date.now()}.png`;
 	setExportButtonLoading(true, 'processing');
 	try {
 		await exportToPNG(posterContainer, filename, null);
