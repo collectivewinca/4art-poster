@@ -57,7 +57,7 @@ export function setupThemePicker() {
 
 		const makeCard = (key, theme, isOther = false) => {
 			const p = paletteFor(theme);
-			const label = theme && theme.name ? theme.name : (isOther ? 'Other Theme' : key);
+			const label = theme && theme.name ? theme.name : (isOther ? 'More' : key);
 			const el = document.createElement('button');
 			el.type = 'button';
 			el.setAttribute('aria-label', `Select ${label}`);
@@ -81,7 +81,7 @@ export function setupThemePicker() {
 
 		artisticMainGrid.textContent = '';
 		mainKeys.forEach(k => artisticMainGrid.appendChild(makeCard(k, artisticThemes[k] || {})));
-		artisticMainGrid.appendChild(makeCard('other', { name: 'Other Theme' }, true));
+		artisticMainGrid.appendChild(makeCard('other', { name: 'More' }, true));
 
 		artisticMainGrid.querySelectorAll('.art-card').forEach(btn => {
 			btn.addEventListener('click', () => {
@@ -468,7 +468,7 @@ export function setupThemePicker() {
 			}
 
 			const artisticTheme = getSelectedArtisticTheme();
-			artisticDesc.textContent = artisticTheme.description;
+			if (artisticDesc) artisticDesc.textContent = '';
 
 			let accentColor = '#0f172a';
 			if (currentState.renderMode === 'artistic') {
