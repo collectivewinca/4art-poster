@@ -1,6 +1,5 @@
 import { state, updateState } from '../core/state.js';
 import { updateMarkerStyles, updateRouteStyles, updateRouteGeometry } from '../map/map-init.js';
-import { updateEntityLegend } from '../map/entity-marker-manager.js';
 import { getMarkerPlacementMode, getSelectedMarkerIndex, removeSelectedMarker, selectMarker, setMarkerPlacementMode } from '../map/marker-manager.js';
 
 export function setupMarkerRouteControls() {
@@ -16,10 +15,6 @@ export function setupMarkerRouteControls() {
 	const selectedMarkerName = document.getElementById('selected-marker-name');
 	const selectedMarkerCoords = document.getElementById('selected-marker-coords');
 	const removeSelectedMarkerBtn = document.getElementById('remove-selected-marker-btn');
-	const legendToggle = document.getElementById('show-legend-toggle');
-	const legendScaleSlider = document.getElementById('legend-scale-slider');
-	const legendScaleValue = document.getElementById('legend-scale-value');
-
 	if (markerIconSelect) {
 		markerIconSelect.addEventListener('change', (e) => {
 			updateState({ markerIcon: e.target.value });
@@ -33,22 +28,6 @@ export function setupMarkerRouteControls() {
 			updateState({ markerSize: size / 40.0 });
 			updateMarkerStyles(state);
 			if (markerSizeValue) markerSizeValue.textContent = `${size}px`;
-		});
-	}
-
-	if (legendToggle) {
-		legendToggle.addEventListener('change', (e) => {
-			updateState({ showEntityLegend: e.target.checked });
-			updateEntityLegend(state);
-		});
-	}
-
-	if (legendScaleSlider) {
-		legendScaleSlider.addEventListener('input', (e) => {
-			const scale = parseInt(e.target.value) / 10;
-			updateState({ entityLegendScale: scale });
-			updateEntityLegend(state);
-			if (legendScaleValue) legendScaleValue.textContent = `${scale.toFixed(1)}x`;
 		});
 	}
 
@@ -165,14 +144,6 @@ export function setupMarkerRouteControls() {
 				const size = Math.round((currentState.markerSize || 1) * 40);
 				markerSizeSlider.value = size;
 				if (markerSizeValue) markerSizeValue.textContent = `${size}px`;
-			}
-			if (legendToggle) {
-				legendToggle.checked = currentState.showEntityLegend !== false;
-			}
-			if (legendScaleSlider) {
-				const scale = currentState.entityLegendScale || 1;
-				legendScaleSlider.value = Math.round(scale * 10);
-				if (legendScaleValue) legendScaleValue.textContent = `${scale.toFixed(1)}x`;
 			}
 			if (placeMarkerBtn) {
 				placeMarkerBtn.classList.toggle('border-accent', placementMode);

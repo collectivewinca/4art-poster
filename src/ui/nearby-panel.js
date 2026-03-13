@@ -120,9 +120,6 @@ function render(container) {
 		wrapper.appendChild(buildEmptyState());
 	}
 
-	// Ecosystem links
-	wrapper.appendChild(buildEcosystemLinks());
-
 	container.appendChild(wrapper);
 }
 
@@ -279,28 +276,4 @@ function buildEmptyState() {
 
 	a.appendChild(content);
 	return a;
-}
-
-function buildEcosystemLinks() {
-	const row = el('div', 'flex gap-1.5 mt-2');
-
-	const links = [
-		{ href: 'https://minyfy.minyvinyl.com', label: 'Mixtapes', icon: 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z' },
-		{ href: 'https://directory.minyvinyl.com', label: 'Directory', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
-		{ href: 'https://rapidconnect.minyvinyl.com', label: 'EPK', icon: 'M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0' },
-	];
-
-	links.forEach(({ href, label, icon }) => {
-		const a = el('a', 'flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-slate-50 border border-slate-100 hover:border-accent/30 transition-colors group');
-		a.href = href;
-		a.target = '_blank';
-		a.rel = 'noopener';
-		a.appendChild(svgIcon(icon, 'w-3 h-3 text-slate-400 group-hover:text-accent transition-colors'));
-		const txt = el('span', 'text-[8px] font-bold text-slate-400 group-hover:text-slate-600 uppercase tracking-wider');
-		txt.textContent = label;
-		a.appendChild(txt);
-		row.appendChild(a);
-	});
-
-	return row;
 }

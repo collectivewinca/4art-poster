@@ -35,7 +35,7 @@ function setupStudioFlow() {
 			showLabels: false,
 			showMarker: false,
 			showEntityMarkers: true,
-			showEntityLegend: true,
+			showEntityLegend: false,
 			markerIcon: 'hexagon',
 			overlayBgType: 'vignette',
 			overlaySize: 'small',
@@ -46,7 +46,7 @@ function setupStudioFlow() {
 			artisticTheme: 'cyber_noir',
 			showLabels: false,
 			showMarker: false,
-			showEntityLegend: true,
+			showEntityLegend: false,
 			overlayBgType: 'none',
 			overlaySize: 'small',
 			matEnabled: false
@@ -68,7 +68,6 @@ function setupStudioFlow() {
 		const cityName = currentState.cityOverride || currentState.city;
 		const countryName = currentState.countryOverride || currentState.country;
 		const detailBits = [];
-		if (currentState.showEntityLegend !== false) detailBits.push('legend');
 		if ((currentState.entityMarkers || []).length) detailBits.push(`${currentState.entityMarkers.length} pins`);
 		if (currentState.showRoute) detailBits.push('route');
 		if (currentState.showMarker) detailBits.push(currentState.markerIcon || 'marker');
@@ -81,7 +80,7 @@ function setupStudioFlow() {
 		presetButtons.forEach((button) => {
 			const isActive =
 				(button.dataset.designPreset === 'editorial' && currentState.renderMode === 'tile' && currentState.theme === 'minimal' && currentState.matEnabled) ||
-				(button.dataset.designPreset === 'directory' && currentState.renderMode === 'tile' && currentState.theme === 'voyager' && currentState.showEntityLegend !== false) ||
+				(button.dataset.designPreset === 'directory' && currentState.renderMode === 'tile' && currentState.theme === 'voyager' && currentState.showEntityMarkers !== false) ||
 				(button.dataset.designPreset === 'neon' && currentState.renderMode === 'artistic' && currentState.artisticTheme === 'cyber_noir');
 			button.classList.toggle('ring-2', isActive);
 			button.classList.toggle('ring-accent', isActive);
