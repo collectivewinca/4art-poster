@@ -7,12 +7,21 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "vitest run",
-		"test:watch": "vitest"
+		"test:watch": "vitest",
+		"cli": "node bin/poster.js",
+		"poster": "node bin/poster.js"
+	},
+	"bin": {
+		"poster": "./bin/poster.js"
 	},
 	"dependencies": {
+		"axios": "^1.13.6",
+		"canvas": "^3.2.1",
+		"csv-parse": "^6.1.0",
 		"html2canvas": "^1.4.1",
 		"leaflet": "^1.9.4",
-		"maplibre-gl": "^5.18.0"
+		"maplibre-gl": "^5.18.0",
+		"yargs": "^18.0.0"
 	},
 	"devDependencies": {
 		"autoprefixer": "^10.4.24",
