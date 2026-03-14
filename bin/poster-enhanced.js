@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 
+import fs from 'fs';
+import path from 'path';
+import { Canvas } from 'canvas';
+import axios from 'axios';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { artisticThemes } from '../src/core/artistic-themes.js';
 import { EnhancedFourartGenerator } from '../src/core/4art-enhanced-generator.js';
 import { generate as generateBasic } from '../src/core/4art-generator.js';
 
@@ -65,9 +70,9 @@ const generateCmd = {
         
         // Write output
         if (argv.format === 'json') {
-          require('fs').writeFileSync(argv.output, result);
+          fs.writeFileSync(argv.output, result);
         } else {
-          require('fs').writeFileSync(argv.output, result);
+          fs.writeFileSync(argv.output, result);
         }
 
         console.log(`✅ Poster saved to ${argv.output}`);

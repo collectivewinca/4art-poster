@@ -9,32 +9,25 @@ const generateCmd = {
   describe: 'Generate a poster',
   builder: (y) =>
     y
-      .option('type', { alias: 't', describe: 'Poster type: city or 4art', choices: ['city', '4art'], default: 'city', type: 'string' })
-      .option('artist', { alias: 'a', describe: 'Artist ID (for 4art type)', type: 'string' })
+      .option('artist', { alias: 'a', describe: 'Artist ID', type: 'string', demandOption: true })
       .option('data', { alias: 'd', describe: 'Path to JSON data file', type: 'string' })
       .option('output', { alias: 'o', describe: 'Output file path', type: 'string', demandOption: true })
       .option('format', { describe: 'Output format: png or json', choices: ['png', 'json'], default: 'png', type: 'string' })
-      .option('width', { describe: 'Image width (default: 1920)', type: 'number', default: 1920 })
-      .option('height', { describe: 'Image height (default: 1080)', type: 'number', default: 1080 })
-      .option('theme', { describe: 'Theme name (for city type)', type: 'string', default: 'minimal-white' })
-      .example('poster generate --type 4art --artist bruno-mars --output poster.png', 'Generate 4art poster for artist'),
+      .option('width', { describe: 'Image width (default: 1200)', type: 'number', default: 1200 })
+      .option('height', { describe: 'Image height (default: 800)', type: 'number', default: 800 })
+      .example('poster generate --artist bruno-mars --output poster.png', 'Generate 4art poster for artist'),
   handler: async (argv) => {
     try {
-      if (argv.type === '4art') {
-        const { generate } = await import('../src/core/4art-generator.js');
-        await generate({
-          artistId: argv.artist,
-          data: argv.data,
-          output: argv.output,
-          width: argv.width,
-          height: argv.height,
-          format: argv.format,
-          verbose: argv.verbose
-        });
-      } else {
-        const { generateCityPoster } = await import('../src/core/city-generator.js');
-        await generateCityPoster(argv);
-      }
+      const { generate } = await import('../src/core/4art-generator.js');
+      await generate({
+        artistId: argv.artist,
+        data: argv.data,
+        output: argv.output,
+        width: argv.width,
+        height: argv.height,
+        format: argv.format,
+        verbose: argv.verbose
+      });
     } catch (error) {
       console.error('❌ Generation failed:', error.message);
       if (argv.verbose) console.error(error.stack);
@@ -129,7 +122,6 @@ const batchCmd = {
     y
       .option('input', { alias: 'i', describe: 'Input CSV file', type: 'string', demandOption: true })
       .option('output', { alias: 'o', describe: 'Output directory', type: 'string', default: './' })
-      .option('type', { alias: 't', describe: 'Poster type', choices: ['4art', 'city'], default: '4art', type: 'string' })
       .option('concurrent', { describe: 'Concurrent generations', type: 'number', default: 4 })
       .example('poster batch --input artists.csv --output ./posters/', 'Generate batch'),
   handler: async (argv) => {
@@ -138,7 +130,6 @@ const batchCmd = {
       await batch({
         input: argv.input,
         output: argv.output,
-        type: argv.type,
         concurrent: argv.concurrent,
         verbose: argv.verbose
       });
