@@ -15,6 +15,7 @@ const generateCmd = {
       .option('format', { describe: 'Output format: png or json', choices: ['png', 'json'], default: 'png', type: 'string' })
       .option('width', { describe: 'Image width (default: 1200)', type: 'number', default: 1200 })
       .option('height', { describe: 'Image height (default: 800)', type: 'number', default: 800 })
+      .option('zoom', { alias: 'z', describe: 'Map zoom level (default: 12)', type: 'number' })
       .example('poster generate --artist bruno-mars --output poster.png', 'Generate 4art poster for artist'),
   handler: async (argv) => {
     try {
@@ -25,6 +26,7 @@ const generateCmd = {
         output: argv.output,
         width: argv.width,
         height: argv.height,
+        zoom: argv.zoom,
         format: argv.format,
         verbose: argv.verbose
       });

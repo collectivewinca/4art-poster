@@ -1,0 +1,33 @@
+{
+  "description": "Sample top listener cities for demo artists. Replace with real Spotify/RapidConnect data when available.",
+  "artists": {
+    "artists-bruno-mars": [
+      { "city": "Manila", "country": "Philippines", "lat": 14.5995, "lng": 120.9842, "listeners": 4200000 },
+      { "city": "Jakarta", "country": "Indonesia", "lat": -6.2088, "lng": 106.8456, "listeners": 3800000 },
+      { "city": "New York", "country": "USA", "lat": 40.7128, "lng": -74.0060, "listeners": 2900000 },
+      { "city": "Tokyo", "country": "Japan", "lat": 35.6762, "lng": 139.6503, "listeners": 2100000 },
+      { "city": "London", "country": "UK", "lat": 51.5074, "lng": -0.1278, "listeners": 1800000 }
+    ],
+    "artists-j-balvin": [
+      { "city": "Mexico City", "country": "Mexico", "lat": 19.4326, "lng": -99.1332, "listeners": 5100000 },
+      { "city": "Bogotá", "country": "Colombia", "lat": 4.7110, "lng": -74.0721, "listeners": 3900000 },
+      { "city": "Santiago", "country": "Chile", "lat": -33.4489, "lng": -70.6693, "listeners": 2400000 },
+      { "city": "Miami", "country": "USA", "lat": 25.7617, "lng": -80.1918, "listeners": 2100000 },
+      { "city": "Madrid", "country": "Spain", "lat": 40.4168, "lng": -3.7038, "listeners": 1700000 }
+    ],
+    "artists-anitta": [
+      { "city": "São Paulo", "country": "Brazil", "lat": -23.5505, "lng": -46.6333, "listeners": 4800000 },
+      { "city": "Mexico City", "country": "Mexico", "lat": 19.4326, "lng": -99.1332, "listeners": 2200000 },
+      { "city": "Lisbon", "country": "Portugal", "lat": 38.7223, "lng": -9.1393, "listeners": 1500000 },
+      { "city": "Buenos Aires", "country": "Argentina", "lat": -34.6037, "lng": -58.3816, "listeners": 1300000 },
+      { "city": "Miami", "country": "USA", "lat": 25.7617, "lng": -80.1918, "listeners": 1100000 }
+    ],
+    "artists-martin-garrix": [
+      { "city": "Mumbai", "country": "India", "lat": 19.0760, "lng": 72.8777, "listeners": 3200000 },
+      { "city": "Jakarta", "country": "Indonesia", "lat": -6.2088, "lng": 106.8456, "listeners": 2800000 },
+      { "city": "London", "country": "UK", "lat": 51.5074, "lng": -0.1278, "listeners": 2100000 },
+      { "city": "São Paulo", "country": "Brazil", "lat": -23.5505, "lng": -46.6333, "listeners": 1900000 },
+      { "city": "Mexico City", "country": "Mexico", "lat": 19.4326, "lng": -99.1332, "listeners": 1600000 }
+    ]
+  }
+}

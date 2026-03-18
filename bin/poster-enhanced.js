@@ -2,8 +2,6 @@
 
 import fs from 'fs';
 import path from 'path';
-import { Canvas } from 'canvas';
-import axios from 'axios';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { artisticThemes } from '../src/core/artistic-themes.js';
@@ -20,9 +18,10 @@ const generateCmd = {
       .option('artist', { alias: 'a', describe: 'Artist ID', type: 'string', demandOption: true })
       .option('output', { alias: 'o', describe: 'Output file path', type: 'string', demandOption: true })
       .option('format', { describe: 'Output format', choices: ['png', 'json', 'svg', 'pdf'], default: 'png', type: 'string' })
-      .option('width', { describe: 'Image width', type: 'number', default: 1920 })
-      .option('height', { describe: 'Image height', type: 'number', default: 1080 })
-      .option('theme', { describe: '32 artistic themes available', type: 'string', default: 'ancient_woodland' })
+      .option('width', { describe: 'Image width', type: 'number', default: 1200 })
+      .option('height', { describe: 'Image height', type: 'number', default: 800 })
+      .option('zoom', { alias: 'z', describe: 'Map zoom level (default: 12)', type: 'number' })
+      .option('theme', { describe: '32 artistic themes available', type: 'string', default: 'cyber_noir' })
       .option('enhanced', { describe: 'Use enhanced features', type: 'boolean', default: false })
       .option('show-legend', { describe: 'Add legend to poster', type: 'boolean', default: true })
       .option('show-routes', { describe: 'Show routes between locations', type: 'boolean', default: false })
@@ -57,6 +56,7 @@ const generateCmd = {
         const generator = new EnhancedFourartGenerator({
           width: argv.width,
           height: argv.height,
+          zoom: argv.zoom,
           format: argv.format,
           theme: argv.theme,
           showLegend: argv['show-legend'],
@@ -83,6 +83,7 @@ const generateCmd = {
           output: argv.output,
           width: argv.width,
           height: argv.height,
+          zoom: argv.zoom,
           format: argv.format,
           verbose: argv.verbose
         });

@@ -4,12 +4,20 @@
  */
 
 import fs from 'fs/promises';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export class FourartJsonGenerator {
   constructor(options = {}) {
     this.geoIndexPath = options.geoIndexPath || '/Users/aletviegas/Documents/miny-directory-work/dist/geo-index.json';
+    this.listenerCitiesPath = options.listenerCitiesPath || join(__dirname, '../../data/sample-listener-cities.json');
+    this.entitiesPath = options.entitiesPath || '/Users/aletviegas/Documents/miny-directory-work/dist/entities.json';
     this.verbose = options.verbose || false;
     this.cache = new Map();
+    this._listenerCitiesData = null;
+    this._enrichedData = null;
   }
 
   log(msg) {
@@ -72,16 +80,21 @@ export class FourartJsonGenerator {
   buildArtistData(id, entity) {
     const location = entity.location || '';
     const [city, state] = location.split(',').map(s => s.trim());
+    const slug = id.replace('artists-', '');
 
     return {
-      id: id.replace('artists-', ''),
+      id: slug,
       name: entity.name || 'Unknown Artist',
       image: entity.image || '',
-      genres: entity.genres || [],
+      genres: entity.genres || entity.genre_tags || [],
       spotifyId: entity.spotifyId || '',
       instagramHandle: entity.instagramHandle || '',
       followers: entity.followers || 0,
       bio: entity.bio || '',
+      epkUrl: entity.generated_epk_url || '',
+      shortlink: entity.generated_epk_url
+        ? `go.minyvinyl.com/${slug}`
+        : '',
       primaryLocation: {
         city: city || 'Unknown',
         state: state || '',
@@ -102,8 +115,17 @@ export class FourartJsonGenerator {
     // Get primary artist data
     const artist = await this.getArtistPrimary(artistId);
 
-    // TODO: Fetch from RapidConnect API (Phase 2b)
-    const listenerCities = options.listenerCities || [];
+    // Enrich with EPK/shortlink data from entities.json
+    const enriched = await this._getEnrichedData(artist.name);
+    if (enriched) {
+      artist.epkUrl = enriched.generated_epk_url || '';
+      artist.shortlink = enriched.generated_epk_url ? `go.minyvinyl.com/${artist.id}` : '';
+      artist.spotifyMonthlyListeners = enriched.spotify_monthly_listeners || 0;
+      this.log(`Enriched: epk=${artist.epkUrl ? 'yes' : 'no'}, spotify=${artist.spotifyMonthlyListeners}`);
+    }
+
+    // Load listener cities from data file or options
+    const listenerCities = options.listenerCities || await this._loadListenerCities(artistId);
 
     // TODO: Fetch from Firebase (Phase 2)
     const upcomingEvents = options.upcomingEvents || [];
@@ -118,6 +140,9 @@ export class FourartJsonGenerator {
         spotifyId: artist.spotifyId,
         instagramHandle: artist.instagramHandle,
         followers: artist.followers,
+        epkUrl: artist.epkUrl || '',
+        shortlink: artist.shortlink || '',
+        spotifyMonthlyListeners: artist.spotifyMonthlyListeners || 0,
         primaryLocation: artist.primaryLocation,
         listenerCities,
         upcomingEvents
@@ -127,7 +152,7 @@ export class FourartJsonGenerator {
           lat: artist.primaryLocation.lat,
           lng: artist.primaryLocation.lng
         },
-        initialZoom: 3,
+        initialZoom: listenerCities.length > 0 ? 3 : 12,
         markerTypes: {
           primary: { color: '#e74c3c', icon: 'home', size: 'large' },
           listeners: { color: '#f1c40f', icon: 'music', size: 'medium' },
@@ -143,6 +168,44 @@ export class FourartJsonGenerator {
 
     this.log('✅ 4art JSON built successfully');
     return json;
+  }
+
+  /**
+   * Look up enriched entity data (EPK URL, Spotify metrics, etc.)
+   */
+  async _getEnrichedData(artistName) {
+    try {
+      if (!this._enrichedData) {
+        const raw = await fs.readFile(this.entitiesPath, 'utf8');
+        const parsed = JSON.parse(raw);
+        // entities.json uses categories.artists as an array
+        this._enrichedData = parsed.categories?.artists || [];
+      }
+      const match = this._enrichedData.find(a =>
+        a.name?.toLowerCase() === artistName.toLowerCase()
+      );
+      return match || null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Load listener cities for an artist from data file
+   */
+  async _loadListenerCities(artistId) {
+    try {
+      if (!this._listenerCitiesData) {
+        const raw = await fs.readFile(this.listenerCitiesPath, 'utf8');
+        this._listenerCitiesData = JSON.parse(raw);
+      }
+      const fullId = artistId.startsWith('artists-') ? artistId : `artists-${artistId}`;
+      const cities = this._listenerCitiesData.artists?.[fullId] || this._listenerCitiesData.artists?.[artistId] || [];
+      if (cities.length) this.log(`Loaded ${cities.length} listener cities for ${fullId}`);
+      return cities;
+    } catch {
+      return [];
+    }
   }
 
   /**
